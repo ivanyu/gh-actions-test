@@ -12,7 +12,7 @@ on:
 
 jobs:
   create_release_pr:
-    name: Create release PR
+    name: Create release PR (job)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout master
@@ -55,9 +55,10 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          title: Add release ${{ github.event.inputs.release_version }} commits
+          title: Release version ${{ github.event.inputs.release_version }}
           branch: release-${{ github.event.inputs.release_version }}
-          delete-branch: true
+#          delete-branch: true
+          draft: true
       - name: Check outputs
         run: |
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
