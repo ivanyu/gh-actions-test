@@ -15,11 +15,24 @@ jobs:
     name: Create release PR (job)
     runs-on: ubuntu-latest
     steps:
+      - name: Check versions
+        run: |
+          echo "Checking release version"
+          if echo ${{ github.event.inputs.release_version }} | grep --invert-match '^[0-9]\+\.[0-9]\+\.[0-9]\+$' > /dev/null; then
+              exit 1
+          fi
+
+          echo "Checking snapshot version"
+          if echo ${{ github.event.inputs.snapshot_version }} | grep --invert-match '^[0-9]\+\.[0-9]\+\.[0-9]\+-SNAPSHOT$' > /dev/null; then
+              exit 1
+          fi
+
       - name: Checkout master
         uses: actions/checkout@v2
         with:
           ref: master
           fetch-depth: 0
+
       - name: Create release commits
         run: |
           git config --local user.name "GitHub Action"
@@ -27,44 +40,10 @@ jobs:
           sed -i -e "s/^version=.\+$/version=${{ github.event.inputs.release_version }}/g" gradle.properties
           git add gradle.properties
           git commit -m "Release version ${{ github.event.inputs.release_version }}"
+          sed -i -e "s/^version=.\+$/version=${{ github.event.inputs.snapshot_version }}/g" gradle.properties
+          git add gradle.properties
+          git commit -m "Bump version to ${{ github.event.inputs.release_version }}"
 
-#      - name: Checkout master
-#        uses: actions/checkout@v2
-#        with:
-#          ref: master
-#          fetch-depth: 0
-#      - name: Create release branch
-#        uses: peterjgrainger/action-create-branch@v1.0.0
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          branch: release-${{ github.event.inputs.release_version }}
-#      - name: Checkout release branch
-#        uses: actions/checkout@v2
-#        with:
-#          ref: release-${{ github.event.inputs.release_version }}
-#      - name: Change release version
-#        run: sed -i -e "s/^version=.\+$/version=${{ github.event.inputs.release_version }}/g" gradle.properties
-#      - name: Commit release version
-#        uses: EndBug/add-and-commit@v4
-#        with:
-#          author_name: GitHub Actions
-#          author_email: action@github.com
-#          message: Release version ${{ github.event.inputs.release_version }}
-#          add: '.'
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#      - name: Change snapshot version
-#        run: sed -i -e "s/^version=.\+$/version=${{ github.event.inputs.snapshot_version }}/g" gradle.properties
-#      - name: Commit snapshot version
-#        uses: EndBug/add-and-commit@v4
-#        with:
-#          author_name: GitHub Actions
-#          author_email: action@github.com
-#          message: Bump version to ${{ github.event.inputs.snapshot_version }}
-#          add: '.'
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
@@ -72,6 +51,7 @@ jobs:
           branch: release-${{ github.event.inputs.release_version }}
           delete-branch: true
           draft: true
+
       - name: Check outputs
         run: |
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
