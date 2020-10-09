@@ -49,7 +49,11 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          title: Release version ${{ github.event.inputs.release_version }}
           branch: release-${{ github.event.inputs.release_version }}
           delete-branch: true
           draft: true
+          title: Release version ${{ github.event.inputs.release_version }}
+          body: |
+            Proposed changelog:
+              - *one*
+              - *two*
