@@ -15,11 +15,12 @@ jobs:
     name: Create release PR (job)
     runs-on: ubuntu-latest
     steps:
-      - name: Create release commits
+      - name: Checkout master
         uses: actions/checkout@v2
         with:
           ref: master
           fetch-depth: 0
+      - name: Create release commits
         run: |
           sed -i -e "s/^version=.\+$/version=${{ github.event.inputs.release_version }}/g" gradle.properties
           git add gradle.properties
