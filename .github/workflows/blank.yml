@@ -1,4 +1,4 @@
-# The workflow to create
+# The workflow to create PRs with release commits.
 name: Create release PR
 on:
   workflow_dispatch:
@@ -17,14 +17,16 @@ jobs:
     steps:
       - name: Check versions
         run: |
-          echo "Checking release version"
+          echo "Checking release version..."
           if echo ${{ github.event.inputs.release_version }} | grep --invert-match '^[0-9]\+\.[0-9]\+\.[0-9]\+$' > /dev/null; then
-              exit 1
+            echo "Release version is invalid"
+            exit 1
           fi
 
-          echo "Checking snapshot version"
+          echo "Checking snapshot version..."
           if echo ${{ github.event.inputs.snapshot_version }} | grep --invert-match '^[0-9]\+\.[0-9]\+\.[0-9]\+-SNAPSHOT$' > /dev/null; then
-              exit 1
+            echo "Snapshot version is invalid"
+            exit 1
           fi
 
       - name: Checkout master
