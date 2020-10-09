@@ -52,14 +52,14 @@ jobs:
           add: '.'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
-        with:
-          title: Release version ${{ github.event.inputs.release_version }}
-          branch: release-${{ github.event.inputs.release_version }}
-#          delete-branch: true
-          draft: true
-      - name: Check outputs
-        run: |
-          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
+#      - name: Create Pull Request
+#        uses: peter-evans/create-pull-request@v3
+#        with:
+#          title: Release version ${{ github.event.inputs.release_version }}
+#          branch: release-${{ github.event.inputs.release_version }}
+##          delete-branch: true
+#          draft: true
+#      - name: Check outputs
+#        run: |
+#          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+#          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
