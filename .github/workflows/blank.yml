@@ -20,16 +20,16 @@ jobs:
         with:
           ref: master
           fetch-depth: 0
-#      - name: Create release branch
-#        uses: peterjgrainger/action-create-branch@v1.0.0
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          branch: release-${{ github.event.inputs.release_version }}
-#      - name: Checkout release branch
-#        uses: actions/checkout@v2
-#        with:
-#          ref: release-${{ github.event.inputs.release_version }}
+      - name: Create release branch
+        uses: peterjgrainger/action-create-branch@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: release-${{ github.event.inputs.release_version }}
+      - name: Checkout release branch
+        uses: actions/checkout@v2
+        with:
+          ref: release-${{ github.event.inputs.release_version }}
       - name: Change release version
         run: sed -i -e "s/^version=.\+$/version=${{ github.event.inputs.release_version }}/g" gradle.properties
       - name: Commit release version
