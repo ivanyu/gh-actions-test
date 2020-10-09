@@ -22,8 +22,8 @@ jobs:
           fetch-depth: 0
       - name: Create release commits
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
+          git config --local user.name "GitHub Action"
+          git config --local user.email "action@github.com"
           sed -i -e "s/^version=.\+$/version=${{ github.event.inputs.release_version }}/g" gradle.properties
           git add gradle.properties
           git commit -m "Release version ${{ github.event.inputs.release_version }}"
