@@ -44,7 +44,7 @@ jobs:
           git commit -m "Release version ${{ github.event.inputs.release_version }}"
           sed -i -e "s/^version=.\+$/version=${{ github.event.inputs.snapshot_version }}/g" gradle.properties
           git add gradle.properties
-          git commit -m "Bump version to ${{ github.event.inputs.release_version }}"
+          git commit -m "Bump version to ${{ github.event.inputs.snapshot_version }}"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
@@ -53,8 +53,3 @@ jobs:
           branch: release-${{ github.event.inputs.release_version }}
           delete-branch: true
           draft: true
-
-      - name: Check outputs
-        run: |
-          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
