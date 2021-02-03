@@ -16,6 +16,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.commit_hash }}
+
       - name: Check commit title and extract version
         run: |
           export commit_title=$(git log --pretty=format:%s -1 ${{ github.event.inputs.commit_hash }})
@@ -26,22 +27,24 @@ jobs:
             echo "Invalid commit title"
             exit 1
           fi
-          echo "version=$(echo ${commit_title} | sed s/^Release\ version\ //g)" >> $GITHUB_ENV
+          export version=$(echo ${commit_title} | sed s/^Release\ version\ //g)
+          echo "Will use version ${version}"
+          echo "version=${version}" >> $GITHUB_ENV
+
+      - name: Create release draft
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: "v${{ env.version }}"
+          release_name: "v${{ env.version }}"
+          body: |
+            *Fill in*
+          draft: true
+          prerelease: false
+
       - name: Test
         run: |
           echo "${{ env.version }}"
 
-      # - name: Create Release
-      #   id: create_release
-      #   uses: actions/create-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-      #   with:
-      #     tag_name: ${{ github.ref }}
-      #     release_name: Release ${{ github.ref }}
-      #     body: |
-      #       Changes in this Release
-      #       - First Change
-      #       - Second Change
-      #     draft: false
-      #     prerelease: false
