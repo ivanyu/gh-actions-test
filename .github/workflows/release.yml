@@ -31,11 +31,23 @@ jobs:
           echo "Will use version ${version}"
           echo "version=${version}" >> $GITHUB_ENV
 
+      - name: Build
+        run: |
+          ./gradlew distTar distZip
+
+          export tar_file=$(ls ./build/distributions/ | grep tar)
+          export zip_file=$(ls ./build/distributions/ | grep zip)
+          echo tar_file=${tar_file}" >> $GITHUB_ENV
+          echo zip_file=${zip_file >> $GITHUB_ENV
+
+          echo tar_path=`realpath ./build/distributions/${tar_file}` >> $GITHUB_ENV
+          echo zip_path=`realpath ./build/distributions/${zip_file}` >> $GITHUB_ENV
+
       - name: Create release draft
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: "v${{ env.version }}"
           release_name: "v${{ env.version }}"
@@ -44,7 +56,22 @@ jobs:
           draft: true
           prerelease: false
 
-      - name: Test
-        run: |
-          echo "${{ env.version }}"
+      - name: Upload tar
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.tar_path }}
+          asset_name: ${{ env.tar_file }}
+          asset_content_type: application/tar
 
+      - name: Upload zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.zip_path }}
+          asset_name: ${{ env.zip_file }}
+          asset_content_type: application/zip
