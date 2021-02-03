@@ -26,10 +26,10 @@ jobs:
             echo "Invalid commit title"
             exit 1
           fi
-          echo "commit_title=${commit_title}" >> $GITHUB_ENV
+          echo "version=$(echo ${commit_title} | sed s/^Release\ version\ //g)" >> $GITHUB_ENV
       - name: Test
         run: |
-          echo "${{ env.commit_title }}"
+          echo "${{ env.version }}"
 
       # - name: Create Release
       #   id: create_release
