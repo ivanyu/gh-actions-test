@@ -16,9 +16,16 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.commit_hash }}
-      - name: Check commit message
+      - name: Check commit title
         run: |
-          echo "XXX"
+          COMMIT_TITLE=$(git log --pretty=format:%s -1 ${{ github.event.inputs.commit_hash }})
+          echo "Commit title: $COMMIT_TITLE"
+          if [[ $COMMIT_TITLE =~ ^Release\ version\ [0-9]*\.[0-9]*\.[0-9]*$ ]]; then
+            echo "Valid commit title"
+          else
+            echo "Invalid commit title"
+            exit 1
+          fi
       # - name: Create Release
       #   id: create_release
       #   uses: actions/create-release@v1
